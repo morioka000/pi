@@ -22,7 +22,7 @@ import time
 import MySQLdb
 
 connection = MySQLdb.connect(db="test",user="takayuki",passwd="taka3211",host="133.101.57.204")
-cursor = connection.cursor()
+c = connection.cursor()
 
 
 def floatfromhex(h):
@@ -56,8 +56,9 @@ def calcTmpTarget(objT, ambT):
     tObj = pow(pow(Tdie2,4) + (fObj/S),.25)
     tObj = (tObj - 273.15)
     print "%.2f C" % tObj
-    cursor.execute("insert into personal (temp) values (tObj)")
-
+    #cursor.execute("insert into personal (temp) values (tObj)")
+    c.execute("insert into sensor (temp) values(tObj)")
+    connection.commit()
 
 bluetooth_adr = sys.argv[1]
 tool = pexpect.spawn('gatttool -b ' + bluetooth_adr + ' --interactive')
@@ -77,3 +78,6 @@ while True:
     ambT = floatfromhex(rval[4] + rval[3])
     #print rval
     calcTmpTarget(objT, ambT)
+
+c.close()
+connection.close()
